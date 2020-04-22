@@ -1,0 +1,18 @@
+[package]
+name = "tvm-serving"
+version = "0.0.1"
+authors = ["MORITA Kazutaka <morita.kazutaka@gmail.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wascc-actor = "0.6.0"
+ndarray="0.12"
+serde = "1.0"
+serde_json = "1.0"
+tvm-runtime = { version = "0.1", path = "../../tvm/rust/runtime" }
+csv = "1.1"
+image = "0.20"
+lazy_static = "1.1.1"
