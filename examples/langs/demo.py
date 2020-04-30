@@ -16,23 +16,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from wasmtime import Store, Module
+from wasmtime import Store, Module, FuncType, MemoryType, TableType, GlobalType
 
 wasm_file = '../../libtvmwasm.wasm'
 
 store = Store()
 module = Module.from_file(store, wasm_file)
 
-for i, e in enumerate(module.exports()):
-    if e.type().func_type():
-        t = e.type().func_type()
-        print("{}: {}, params={}, results={}".format(i, e.name(), t.params(), t.results()))
-    elif e.type().memory_type():
-        t = e.type().memory_type()
-        print("{}: {}, limits=[{}, {}]".format(i, e.name(), t.limits().min, t.limits().max))
-    elif e.type().table_type():
-        t = e.type().table_type()
-        print("{}: {}".format(i, e.name())
-    elif e.type().global_type():
-        t = e.type().global_type()
-        print("{}: {}, content={}, mutable={}".format(i, e.name(), t.content(), t.mutable()))
+for i, e in enumerate(module.exports):
+    if isinstance(e.type, FuncType):
+        print("{}: {}, params={}, results={}".format(i, e.name, e.type.params, e.type.results))
+    elif isinstance(e.type, MemoryType):
+        print("{}: {}, limits=[{}, {}]".format(i, e.name, e.type.limits.min, e.type.limits.max))
+    elif isinstance(e.type, TableType):
+        print("{}: {}".format(i, e.name))
+    elif isinstance(e.type, GlobalType):
+        print("{}: {}, content={}, mutable={}".format(i, e.name, e.type.content, e.type.mutable))

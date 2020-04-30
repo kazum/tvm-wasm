@@ -18,7 +18,7 @@ extern "C" {
 }
 
 #[no_mangle]
-unsafe fn __dummy() -> i32 {
+unsafe fn __get_tvm_module_ctx() -> i32 {
     // Refer a symbol in the libtvmwasm.a to make sure that the link of the
     // library is not optimized out.
     __tvm_module_ctx
@@ -40,9 +40,9 @@ use tvm_runtime::{Graph, GraphExecutor, SystemLibModule, Tensor};
 
 const IMG_HEIGHT: usize = 224;
 const IMG_WIDTH: usize = 224;
-const SYSLIB: SystemLibModule = SystemLibModule {};
 
 lazy_static! {
+    static ref SYSLIB: SystemLibModule = SystemLibModule::default();
     static ref GRAPH_EXECUTOR: Mutex<GraphExecutor<'static, 'static>> = {
         unsafe {
             // This is necessary to invoke TVMBackendRegisterSystemLibSymbol
@@ -62,7 +62,7 @@ lazy_static! {
             .map(|(k, v)| (k, v.to_owned()))
             .collect::<HashMap<String, Tensor<'static>>>();
 
-        let mut exec = GraphExecutor::new(graph, &SYSLIB).unwrap();
+        let mut exec = GraphExecutor::new(graph, &*SYSLIB).unwrap();
         exec.load_params(params);
 
         Mutex::new(exec)
